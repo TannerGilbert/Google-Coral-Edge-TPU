@@ -12,7 +12,7 @@ import numpy as np
 EDGETPU_SHARED_LIB = 'libedgetpu.so.1'
 
 
-def draw_image(image, results, labels):
+def draw_image(image, results, labels, size):
     result_size = len(results)
     for idx, obj in enumerate(results):
         print(obj)
@@ -20,11 +20,15 @@ def draw_image(image, results, labels):
         draw = ImageDraw.Draw(image)
 
         # Prepare boundary box
-        box = obj['bounding_box'].flatten().tolist()
+        ymin, xmin, ymax, xmax = obj['bounding_box']
+        xmin = int(xmin * size[0])
+        xmax = int(xmax * size[0])
+        ymin = int(ymin * size[1])
+        ymax = int(ymax * size[1])
 
         # Draw rectangle to desired thickness
         for x in range( 0, 4 ):
-            draw.rectangle(box, outline=(255, 255, 0))
+            draw.rectangle((ymin, xmin, ymax, xmax), outline=(255, 255, 0))
 
         # Annotate image with label and confidence score
         display_str = labels[obj['class_id']] + ": " + str(round(obj['score']*100, 2)) + "%"
@@ -84,22 +88,6 @@ def detect_objects(interpreter, image, threshold):
             results.append(result)
     return results
 
-def annotate_objects(annotator, results, labels):
-    """Draws the bounding box and label for each object in the results."""
-    for obj in results:
-        # Convert the bounding box figures from relative coordinates
-        # to absolute coordinates based on the original resolution
-        ymin, xmin, ymax, xmax = obj['bounding_box']
-        xmin = int(xmin * CAMERA_WIDTH)
-        xmax = int(xmax * CAMERA_WIDTH)
-        ymin = int(ymin * CAMERA_HEIGHT)
-        ymax = int(ymax * CAMERA_HEIGHT)
-
-        # Overlay the box, label, and score on the camera preview
-        annotator.bounding_box([xmin, ymin, xmax, ymax])
-        annotator.text([xmin, ymin],
-                    '%s\n%.2f' % (labels[obj['class_id']], obj['score']))
-
 
 def make_interpreter(model_file):
     model_file, *device = model_file.split('@')
@@ -143,7 +131,7 @@ def main():
             # Perfrom inference
             results = detect_objects(interpreter, image_pred, args.threshold)
             
-            draw_image(image, results, labels)
+            draw_image(image, results, labels, image.size)
 
             if( cv2.waitKey( 5 ) & 0xFF == ord( 'q' ) ):
                 fps.stop()
