@@ -32,7 +32,7 @@ def draw_image(image, results, labels, size):
 
         # Annotate image with label and confidence score
         display_str = labels[obj['class_id']] + ": " + str(round(obj['score']*100, 2)) + "%"
-        draw.text((box[0], box[1]), display_str, font=ImageFont.truetype("/usr/share/fonts/truetype/piboto/Piboto-Regular.ttf", 20))
+        draw.text((ymin,xmin), display_str, font=ImageFont.truetype("/usr/share/fonts/truetype/piboto/Piboto-Regular.ttf", 20))
 
         displayImage = np.asarray( image )
         cv2.imshow('Coral Live Object Detection', displayImage)
@@ -116,7 +116,8 @@ def main():
     _, input_height, input_width, _ = interpreter.get_input_details()[0]['shape']
 
     # Initialize video stream
-    vs = VideoStream(usePiCamera=args.picamera, resolution=(640, 480)).start()
+    vs = VideoStream(usePiCamera=args.picamera, resolution=(640, 480))
+    vs.start()
     time.sleep(1)
 
     fps = FPS().start()
