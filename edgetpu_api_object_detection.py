@@ -1,3 +1,4 @@
+# This API is deprecated: Instead try the PyCoral API.
 import os
 import cv2
 import sys
@@ -14,7 +15,6 @@ from imutils.video import FPS
 from imutils.video import VideoStream
 
 
-# Function to read labels from text files.
 def ReadLabelFile(file_path):
     with open(file_path, 'r', encoding='utf-8') as f:
         lines = f.readlines()
@@ -36,14 +36,16 @@ def draw_image(image, results, labels):
         box = obj.bounding_box.flatten().tolist()
 
         # Draw rectangle to desired thickness
-        for x in range( 0, 4 ):
+        for x in range(0, 4):
             draw.rectangle(box, outline=(255, 255, 0))
 
         # Annotate image with label and confidence score
-        display_str = labels[obj.label_id] + ": " + str(round(obj.score*100, 2)) + "%"
-        draw.text((box[0], box[1]), display_str, font=ImageFont.truetype("/usr/share/fonts/truetype/piboto/Piboto-Regular.ttf", 20))
+        display_str = labels[obj.label_id] + ": " + \
+            str(round(obj.score*100, 2)) + "%"
+        draw.text((box[0], box[1]), display_str, font=ImageFont.truetype(
+            "/usr/share/fonts/truetype/piboto/Piboto-Regular.ttf", 20))
 
-        displayImage = numpy.asarray( image )
+        displayImage = numpy.asarray(image)
         cv2.imshow('Coral Live Object Detection', displayImage)
 
 
@@ -57,10 +59,10 @@ def main():
         '--maxobjects', type=int, default=3, help='Maximum objects')
     parser.add_argument(
         '--threshold', type=float, default=0.3, help="Minimum threshold")
-    parser.add_argument( '--picamera',
-                         action='store_true',
-                         help="Use PiCamera for image capture",
-                         default=False)
+    parser.add_argument('--picamera',
+                        action='store_true',
+                        help="Use PiCamera for image capture",
+                        default=False)
     args = parser.parse_args()
 
     # Prepare labels.
@@ -81,11 +83,12 @@ def main():
             image = Image.fromarray(screenshot)
 
             # Perform inference
-            results = engine.detect_with_image(image, threshold=args.threshold, keep_aspect_ratio=True, relative_coord=False, top_k=args.maxobjects)
+            results = engine.detect_with_image(
+                image, threshold=args.threshold, keep_aspect_ratio=True, relative_coord=False, top_k=args.maxobjects)
 
             draw_image(image, results, labels)
 
-            if( cv2.waitKey( 5 ) & 0xFF == ord( 'q' ) ):
+            if(cv2.waitKey(5) & 0xFF == ord('q')):
                 fps.stop()
                 break
 

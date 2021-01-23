@@ -81,7 +81,7 @@ def main():
                          help="Use PiCamera for image capture",
                          default=False)
     parser.add_argument(
-                        '-t', '--threshold', type=float, default=0.0,
+                        '-t', '--threshold', type=float, default=0.5,
                         help='Classification score threshold')
     args = parser.parse_args()
 
@@ -105,8 +105,7 @@ def main():
             screenshot = vs.read()
             image = Image.fromarray(screenshot)
 
-            # Perfrom inference and keep time
-            start_time = time.time()
+            # Perform inference
             image_pred = image.resize((width ,height), Image.ANTIALIAS)
             results = classify_image(interpreter, image_pred)
             result = labels[results[0][0]]

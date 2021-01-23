@@ -9,13 +9,15 @@ To use the EdgeTPU you need the [EdgeTPU API](https://coral.withgoogle.com/softw
 
 ## Image Classification
 
-* [Image Classification with the EdgeTPU API](edgetpu_api_image_classification.py)
+* [Image Classification with pycoral](pycoral_image_classification.py)
 * [Image Classification with the Tensorflow Lite Runtime](tflite_image_classification.py)
+* [Image Classification with the EdgeTPU API (deprecated)](edgetpu_api_image_classification.py)
 
 ## Object Detection
 
-* [Object Detection with the EdgeTPU API](edgetpu_api_object_detection.py)
+* [Object Detection with pycoral](pycoral_object_detection.py)
 * [Object Detection with the Tensorflow Lite Runtime](tflite_object_detection.py)
+* [Object Detection with the EdgeTPU API (deprecated)](edgetpu_api_object_detection.py)
 
 ## Author
  **Gilbert Tanner**

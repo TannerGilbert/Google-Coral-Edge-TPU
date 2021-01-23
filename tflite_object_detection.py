@@ -27,14 +27,16 @@ def draw_image(image, results, labels, size):
         ymax = int(ymax * size[1])
 
         # Draw rectangle to desired thickness
-        for x in range( 0, 4 ):
+        for x in range(0, 4):
             draw.rectangle((ymin, xmin, ymax, xmax), outline=(255, 255, 0))
 
         # Annotate image with label and confidence score
-        display_str = labels[obj['class_id']] + ": " + str(round(obj['score']*100, 2)) + "%"
-        draw.text((ymin,xmin), display_str, font=ImageFont.truetype("/usr/share/fonts/truetype/piboto/Piboto-Regular.ttf", 20))
+        display_str = labels[obj['class_id']] + ": " + \
+            str(round(obj['score']*100, 2)) + "%"
+        draw.text((ymin, xmin), display_str, font=ImageFont.truetype(
+            "/usr/share/fonts/truetype/piboto/Piboto-Regular.ttf", 20))
 
-        displayImage = np.asarray( image )
+        displayImage = np.asarray(image)
         cv2.imshow('Coral Live Object Detection', displayImage)
 
 
@@ -95,25 +97,29 @@ def make_interpreter(model_file):
         model_path=model_file,
         experimental_delegates=[
             load_delegate(EDGETPU_SHARED_LIB,
-            {'device': device[0]} if device else {})
+                          {'device': device[0]} if device else {})
         ]
     )
 
 
 def main():
-    parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('--model', help='File path of .tflite file.', required=True)
-    parser.add_argument('--labels', help='File path of labels file.', required=True)
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument(
+        '--model', help='File path of .tflite file.', required=True)
+    parser.add_argument(
+        '--labels', help='File path of labels file.', required=True)
     parser.add_argument('--threshold', help='Score threshold for detected objects.',
                         required=False, type=float, default=0.4)
-    parser.add_argument( '--picamera', action='store_true', help="Use PiCamera for image capture",
+    parser.add_argument('--picamera', action='store_true', help="Use PiCamera for image capture",
                         default=False)
     args = parser.parse_args()
 
     labels = load_labels(args.labels)
     interpreter = make_interpreter(args.model)
     interpreter.allocate_tensors()
-    _, input_height, input_width, _ = interpreter.get_input_details()[0]['shape']
+    _, input_height, input_width, _ = interpreter.get_input_details()[
+        0]['shape']
 
     # Initialize video stream
     vs = VideoStream(usePiCamera=args.picamera, resolution=(640, 480))
@@ -127,14 +133,15 @@ def main():
             # Read frame from video
             screenshot = vs.read()
             image = Image.fromarray(screenshot)
-            image_pred = image.resize((input_width ,input_height), Image.ANTIALIAS)
+            image_pred = image.resize(
+                (input_width, input_height), Image.ANTIALIAS)
 
             # Perfrom inference
             results = detect_objects(interpreter, image_pred, args.threshold)
-            
+
             draw_image(image, results, labels, image.size)
 
-            if( cv2.waitKey( 5 ) & 0xFF == ord( 'q' ) ):
+            if(cv2.waitKey(5) & 0xFF == ord('q')):
                 fps.stop()
                 break
 
